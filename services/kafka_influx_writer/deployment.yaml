@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-influx-writer
+  namespace: nre-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-influx-writer
+  template:
+    metadata:
+      labels:
+        app: kafka-influx-writer
+    spec:
+      containers:
+        - name: writer
+          image: ghcr.io/modhari/nre-observability-pipeline:kafka-influx-writer
+          imagePullPolicy: Always
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
+            - name: KAFKA_TOPICS
+              value: "nre.plans,nre.incidents"
+            - name: INFLUXDB_URL
+              value: "http://influxdb-influxdb2:80"
+            - name: INFLUXDB_TOKEN
+              value: "nreadminsupersecrettoken"
+            - name: INFLUXDB_ORG
+              value: "nre"
+            - name: INFLUXDB_BUCKET
+              value: "nre"
